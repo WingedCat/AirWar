@@ -12,8 +12,9 @@ public class MyFrame extends Frame{
 	
 	public void launchFrame() {//加载窗体
 		 setSize(Constant.GAME_WIDTH,Constant.GAME_HEIGHT);//设置大小
-		 setLocation(0,0);//设置位置
+		 setLocation(400,0);//设置位置
 		 setVisible(true);//设置窗体可见
+		 setResizable(false);//大小不可以改变
 		 new PaintTread().start();//启动重画线程
 		 addWindowListener(new WindowAdapter() {
 
