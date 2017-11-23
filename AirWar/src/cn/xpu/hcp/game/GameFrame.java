@@ -1,5 +1,6 @@
 package cn.xpu.hcp.game;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -13,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cn.xpu.hcp.entity.Bullet;
+import cn.xpu.hcp.entity.CreateEnemyThread;
 import cn.xpu.hcp.entity.Plane;
 import cn.xpu.hcp.tools.Constant;
 import cn.xpu.hcp.tools.GameImage;
@@ -32,11 +34,13 @@ public class GameFrame extends MyFrame {
 	
 	//创建我方飞机
 	Plane myplane = new Plane(Constant.GAME_WIDTH/2,650,10,true,this);
-	
+	//创建敌方飞机集合
+	public  List<Plane> es = new LinkedList<Plane>(); 
 	//创建子弹集合
 	public List<Bullet> bs = new LinkedList<Bullet>();
 	
 	public void paint(Graphics g){
+		new CreateEnemyThread(es, game).start();//在这里检测敌机数量
 		if(begin){
 			g.drawImage(beginBg, 0, 0, null);
 			try {
@@ -48,13 +52,22 @@ public class GameFrame extends MyFrame {
 		}
 		g.drawImage(gameBg, 0, yPos, null);
 		g.drawImage(gameBg, 0, yPos-1411, null);//两张图片交替
-//		g.drawString("子弹数量："+bs.size(), 100, 100);  
+//		g.drawString("子弹数量："+bs.size(), 100, 100);
+//		g.setColor(Color.red);
+//		g.drawString("敌机数量："+es.size(), 100, 100); 
 		myplane.draw(g);
 		//绘制子弹
 		for(int i=0; i<bs.size(); i++) {//将集合中的子弹都绘制出来  
 	        Bullet b = bs.get(i);  
 	        b.draw(g);  
-	    } 
+	        b.hitPlanes(es);
+	        b.hitPlane(myplane);
+	    }
+		//绘制敌机
+		for(int i=0; i<es.size(); i++) {//将集合中的子弹都绘制出来  
+	        Plane p = es.get(i);  
+	        p.draw(g);  
+	    }
 	}
 	
 	static class BgThread extends Thread{//创建BgThread类，专门用于改名yPos使背景图片滚动
@@ -145,6 +158,7 @@ public class GameFrame extends MyFrame {
 		game.launchFrame();
 		new BgThread().start();
 		new PlaySound("bgmusic.mp3", true).start();
+		
 		game.addKeyListener(game.new KeyMonitor());//添加键盘监听
 		game.setCursor(null);
 		game.addMouseListener(game.new MouseMonitor());
