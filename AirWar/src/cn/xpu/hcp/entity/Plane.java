@@ -8,6 +8,7 @@ import java.util.Random;
 import cn.xpu.hcp.game.GameFrame;
 import cn.xpu.hcp.tools.Constant;
 import cn.xpu.hcp.tools.GameImage;
+import cn.xpu.hcp.tools.PlaySound;
 
 public class Plane {
 	private static Random r = new Random(); 
@@ -20,6 +21,7 @@ public class Plane {
 	private GameFrame gf;
 	private int speed;//飞机移动速度
 	private boolean bL,bU,bR,bD;
+	public static int WIDTH,HEIGHT;//子弹的宽和高
 	private Direction dir = Direction.STOP;//Plane的移动状态,初始化时默认是STOP  
 	private static Image[] myImgs=new Image[28];//存放我方机型图片的数组
 	private static Image[] enemyImgs = new Image[23];//存放敌方普通机型的图片
@@ -107,16 +109,21 @@ public class Plane {
 		if(good==true){
 			randIndex = r.nextInt(28);
 			ensureImg = myImgs[randIndex];
+			randIndex = r.nextInt(3);
 		}else{
 			if(isBoss){//如果是boss机型，在boss机型中选择
 				randIndex = r.nextInt(8);
 				ensureImg = bossImgs[randIndex];
+				randIndex = r.nextInt(2);
 			}else{
 				randIndex = r.nextInt(23);
 				ensureImg = enemyImgs[randIndex];
 				dir = Direction.D;//普通敌机方向只有向下
+				randIndex = r.nextInt(8);
 			}
 		}
+		WIDTH = ensureImg.getWidth(null);
+		HEIGHT = ensureImg.getHeight(null);
 	}
 	public void draw(Graphics g){
 		if(isAlive==false){//飞机死亡，不画
@@ -125,12 +132,14 @@ public class Plane {
 		g.drawImage(ensureImg, x, y, null);
 		move(); 
 	}
-	
 	public void setX(int x) {
 		this.x = x-ensureImg.getWidth(null)/2;
 	}
 	public void setY(int y) {
 		this.y = y-ensureImg.getHeight(null)/2;
+	}
+	public void setIsBoss(){
+		this.isBoss = true;//设置为boss
 	}
 	public void Press(KeyEvent e) {
 		int key = e.getKeyCode();  
@@ -173,8 +182,20 @@ public class Plane {
 	    locateDirection();
 	}
 	
-	private void fire() {
-		if(isAlive)return;//不存活，也就没开火的必要了
+	public void fire() {
+		if(isAlive==false)return;//不存活，也就没开火的必要了
+		new PlaySound("Beam.mp3", false).start();
+		int xPos = -10;  
+		int yPos = -10;  
+		Bullet m = new Bullet(xPos, yPos,10,randIndex, good,this.gf); 
+		m.setX(this.x + Plane.WIDTH/2 - m.getWIDTH()/2);
+		m.setY(this.y   - m.getHEIGHT()+20);
+		gf.bs.add(m);//集合中添加子弹  
+
+	}
+	public void fire(long t){
+		if(r.nextInt(40)>36)
+			fire();
 	}
 	
 	void locateDirection() {//根据按键设置Plane移动方向-->dir  
