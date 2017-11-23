@@ -2,6 +2,7 @@ package cn.xpu.hcp.entity;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.Random;
 
@@ -125,8 +126,12 @@ public class Plane {
 		WIDTH = ensureImg.getWidth(null);
 		HEIGHT = ensureImg.getHeight(null);
 	}
+	public void setRandIndex(int randIndex) {
+		this.randIndex = randIndex;
+	}
 	public void draw(Graphics g){
 		if(isAlive==false){//飞机死亡，不画
+			gf.es.remove(this);
 			return;
 		}
 		g.drawImage(ensureImg, x, y, null);
@@ -184,12 +189,19 @@ public class Plane {
 	
 	public void fire() {
 		if(isAlive==false)return;//不存活，也就没开火的必要了
-		new PlaySound("Beam.mp3", false).start();
+		if(good==true){//敌机发射不产生声音
+			new PlaySound("Beam.mp3", false).start();
+		}
 		int xPos = -10;  
 		int yPos = -10;  
 		Bullet m = new Bullet(xPos, yPos,10,randIndex, good,this.gf); 
-		m.setX(this.x + Plane.WIDTH/2 - m.getWIDTH()/2);
-		m.setY(this.y   - m.getHEIGHT()+20);
+		if(good==true){
+			m.setX(this.x + Plane.WIDTH/2 - m.getWIDTH()/2);
+			m.setY(this.y   - m.getHEIGHT()+20);
+		}else{//敌机发射子弹的位置不同
+			m.setX(this.x + Plane.WIDTH/2 - m.getWIDTH()/2);
+			m.setY(this.y +Plane.HEIGHT);
+		}
 		gf.bs.add(m);//集合中添加子弹  
 
 	}
@@ -244,10 +256,34 @@ public class Plane {
 	    case STOP:  
 	        break;  
 	    }  
-	    //到达窗体边界，不允许继续移动  
-	    if(x < 0) x = 0;  
-	    if(y < 30) y = 30;  
-	    if(x + ensureImg.getWidth(null) > Constant.GAME_WIDTH) x = Constant.GAME_WIDTH - ensureImg.getWidth(null);  
-	    if(y + ensureImg.getHeight(null) > Constant.GAME_HEIGHT) y = Constant.GAME_HEIGHT - ensureImg.getHeight(null);  
+	    if(good==true){
+	    	//到达窗体边界，不允许继续移动  
+	    	if(x < 0) x = 0;  
+	    	if(y < 30) y = 30;  
+	    	if(x + ensureImg.getWidth(null) > Constant.GAME_WIDTH) x = Constant.GAME_WIDTH - ensureImg.getWidth(null);  
+	    	if(y + ensureImg.getHeight(null) > Constant.GAME_HEIGHT) y = Constant.GAME_HEIGHT - ensureImg.getHeight(null);  
+	    }else{
+	    	if(r.nextInt(40) > 38) this.fire();
+	    	if(isBoss){//boss敌机只会左右移动，所有不能左右出界
+	    		if(x + ensureImg.getWidth(null) > Constant.GAME_WIDTH) x = Constant.GAME_WIDTH - ensureImg.getWidth(null);  
+		    	if(y + ensureImg.getHeight(null) > Constant.GAME_HEIGHT) y = Constant.GAME_HEIGHT - ensureImg.getHeight(null);  
+	    	}else{
+	    		if(y>Constant.GAME_HEIGHT){
+	    			isAlive = false;
+	    		}
+	    	}
+	    }
+	}
+	public boolean getAlive() {
+		return this.isAlive;
+	}
+	public boolean isgood() {
+		return this.good;
+	}
+	public Rectangle getRect() {
+		return new Rectangle(x, y, WIDTH, HEIGHT);
+	}
+	public void setAlive(boolean live) {
+		this.isAlive = live;
 	} 
 }
