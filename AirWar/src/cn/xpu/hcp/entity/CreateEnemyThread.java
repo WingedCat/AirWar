@@ -18,6 +18,7 @@ public class CreateEnemyThread extends Thread{
 	public void run() {
 		if(es.size()<6){//使敌机数量保持在6架
 				Plane ePlane = new Plane(r.nextInt(500),-r.nextInt(500),5,false,gf);//敌机
+				ePlane.setBoss(false);
 				es.add(ePlane);
 		}
 	}

@@ -18,10 +18,10 @@ public class Plane {
 	private boolean good;//飞机是我还是对方（敌机）；我设置为true，敌机设置为false
 	private boolean isAlive = true;//表明飞机是否活着
 	private boolean isBoss;//用于敌方飞机是否是boss机型
-	private int blood;//表明飞机血量
 	private GameFrame gf;
 	private int speed;//飞机移动速度
 	private boolean bL,bU,bR,bD;
+	private int life = 100;
 	public static int WIDTH,HEIGHT;//子弹的宽和高
 	private Direction dir = Direction.STOP;//Plane的移动状态,初始化时默认是STOP  
 	private static Image[] myImgs=new Image[28];//存放我方机型图片的数组
@@ -137,6 +137,9 @@ public class Plane {
 		g.drawImage(ensureImg, x, y, null);
 		move(); 
 	}
+	public boolean isBoss() {
+		return isBoss;
+	}
 	public void setX(int x) {
 		this.x = x-ensureImg.getWidth(null)/2;
 	}
@@ -145,6 +148,12 @@ public class Plane {
 	}
 	public void setIsBoss(){
 		this.isBoss = true;//设置为boss
+	}
+	public int getLife() {
+		return life;
+	}
+	public void setLife(int life) {
+		this.life = life;
 	}
 	public void Press(KeyEvent e) {
 		int key = e.getKeyCode();  
@@ -286,4 +295,8 @@ public class Plane {
 	public void setAlive(boolean live) {
 		this.isAlive = live;
 	} 
+
+	public void setBoss(boolean isBoss) {
+		this.isBoss = isBoss;
+	}
 }

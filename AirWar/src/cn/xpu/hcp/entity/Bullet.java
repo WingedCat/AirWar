@@ -33,7 +33,7 @@ public class Bullet {
 	private GameFrame gf;
 	
 	private static Image[] myImgs=new Image[13];//存放我方子弹图片的数组
-	private static Image[] enemyImgs = new Image[8];//存放敌方普通机型子弹的图片
+	private static Image[] enemyImgs = new Image[9];//存放敌方普通机型子弹的图片
 	private static Image[] bossImgs = new Image[5];//存放敌方boss机型子弹的图片
 	private Image ensureImg;//具体确定的图片
 	
@@ -58,14 +58,17 @@ public class Bullet {
 	    myImgs[12]= GameImage.getImage("resources/m13.png");
 	    
 	    //敌方普通飞机子弹图片
-	    enemyImgs[0]=GameImage.getImage("resources/em1.png");  
-	    enemyImgs[1]= GameImage.getImage("resources/em2.png");  
-	    enemyImgs[2]= GameImage.getImage("resources/em3.png");  
-	    enemyImgs[3]= GameImage.getImage("resources/em4.png");  
-	    enemyImgs[4]= GameImage.getImage("resources/em5.png");  
-	    enemyImgs[5]= GameImage.getImage("resources/em6.png");  
-	    enemyImgs[6]= GameImage.getImage("resources/em7.png");  
-	    enemyImgs[7]= GameImage.getImage("resources/em8.png"); 
+	    enemyImgs[0]=GameImage.getImage("resources/em2.png");  
+	    enemyImgs[1]= GameImage.getImage("resources/em3.png");  
+	    enemyImgs[2]= GameImage.getImage("resources/em4.png");  
+	    enemyImgs[3]= GameImage.getImage("resources/em5.png");  
+	    enemyImgs[4]= GameImage.getImage("resources/em6.png"); 
+	    
+	    enemyImgs[5]= GameImage.getImage("resources/em7.png");  
+	    
+	    enemyImgs[6]= GameImage.getImage("resources/em8.png");  
+	    enemyImgs[7]= GameImage.getImage("resources/em9.png"); 
+	    enemyImgs[8]= GameImage.getImage("resources/em1.png"); 
 	    
 	    //boss子弹图片
 	    //低级子弹
@@ -120,11 +123,34 @@ public class Bullet {
 				ensureImg = bossImgs[randIndex];
 				WIDTH = ensureImg.getWidth(null);
 				HEIGHT = ensureImg.getHeight(null);
-				
+				//根据不同等级的子弹设置不同等级的杀伤力
+				if(randIndex>=0&&randIndex<=1){
+					this.power = 10;
+				}else{
+					if(randIndex==2){
+						this.power = 20;
+					}else{
+						if(randIndex>=3&&randIndex<=4){
+							this.power = 50;
+						}
+					}
+				}
 			}else{
 				ensureImg = enemyImgs[randIndex];
 				WIDTH = ensureImg.getWidth(null);
 				HEIGHT = ensureImg.getHeight(null);
+				//根据不同等级的子弹设置不同等级的杀伤力
+				if(randIndex>=0&&randIndex<=4){
+					this.power = 2;
+				}else{
+					if(randIndex==5){
+						this.power = 5;
+					}else{
+						if(randIndex>=6&&randIndex<=8){
+							this.power = 15;
+						}
+					}
+				}
 			}
 		}
 		
@@ -155,9 +181,18 @@ public class Bullet {
 	
 	public boolean hitPlane(Plane p) {  
 	    if(this.isAlive && this.getRect().intersects(p.getRect()) && p.getAlive() && this.good != p.isgood()) {//不是己方子弹并且发生了碰撞  
-	        p.setAlive(false);//飞机死亡  
-	        this.isAlive = false;//子弹应该消失  
-	        return true;  
+	    	this.isAlive = false;//子弹应该消失 
+	    	//除了boss机型，其他敌机对我的子弹是杀伤力100%
+	        if(this.good&&p.isBoss()==false){
+	        	p.setAlive(false);
+	        }
+	    	p.setLife(p.getLife()-this.power);
+	        if(p.getLife()<=0||p.getAlive()==false){
+	        	p.setAlive(false);//飞机死亡  
+	        	Explode e = new Explode(x, y, gf);  
+	        	gf.explodes.add(e);//添加爆炸
+	        	return true;
+	        }
 	    }  
 	    return false;  
 	}  

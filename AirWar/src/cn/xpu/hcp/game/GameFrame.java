@@ -1,6 +1,5 @@
 package cn.xpu.hcp.game;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -15,6 +14,7 @@ import java.util.List;
 
 import cn.xpu.hcp.entity.Bullet;
 import cn.xpu.hcp.entity.CreateEnemyThread;
+import cn.xpu.hcp.entity.Explode;
 import cn.xpu.hcp.entity.Plane;
 import cn.xpu.hcp.tools.Constant;
 import cn.xpu.hcp.tools.GameImage;
@@ -22,15 +22,17 @@ import cn.xpu.hcp.tools.MyFrame;
 import cn.xpu.hcp.tools.PlaySound;
 
 public class GameFrame extends MyFrame {
+	//取得游戏背景
+	static Image gameBg = GameImage.getImage("resources/background1.bmp");
+	
 	static boolean begin=true;//开始标志
-	static int yPos = -646;
+	static int yPos = -1*(gameBg.getHeight(null)-Constant.GAME_HEIGHT);
 	static boolean useMouse = true;
+	static PlaySound pbg = new PlaySound("bgmusic.mp3", true);
 	
 	private static final long serialVersionUID = 1L;
 	//取得开始背景
 	Image beginBg = GameImage.getImage("resources/startbg1.jpg");
-	//取得游戏背景
-	Image gameBg = GameImage.getImage("resources/background1.bmp");
 	
 	//创建我方飞机
 	Plane myplane = new Plane(Constant.GAME_WIDTH/2,650,10,true,this);
@@ -38,6 +40,8 @@ public class GameFrame extends MyFrame {
 	public  List<Plane> es = new LinkedList<Plane>(); 
 	//创建子弹集合
 	public List<Bullet> bs = new LinkedList<Bullet>();
+	//创建爆炸集合
+	public List<Explode> explodes = new LinkedList<Explode>();
 	
 	public void paint(Graphics g){
 		new CreateEnemyThread(es, game).start();//在这里检测敌机数量
@@ -51,7 +55,7 @@ public class GameFrame extends MyFrame {
 			}
 		}
 		g.drawImage(gameBg, 0, yPos, null);
-		g.drawImage(gameBg, 0, yPos-1411, null);//两张图片交替
+		g.drawImage(gameBg, 0, yPos-gameBg.getHeight(null), null);//两张图片交替
 //		g.drawString("子弹数量："+bs.size(), 100, 100);
 //		g.setColor(Color.red);
 //		g.drawString("敌机数量："+es.size(), 100, 100); 
@@ -68,6 +72,12 @@ public class GameFrame extends MyFrame {
 	        Plane p = es.get(i);  
 	        p.draw(g);  
 	    }
+		//绘制爆炸
+		for(int i=0; i<explodes.size(); i++) {  
+		    Explode e = explodes.get(i);  
+		    e.draw(g);  
+		    new PlaySound("BombSound_solider.mp3", false).start();
+		}
 	}
 	
 	static class BgThread extends Thread{//创建BgThread类，专门用于改名yPos使背景图片滚动
@@ -75,7 +85,7 @@ public class GameFrame extends MyFrame {
 		public void run() {
 			while(true){
 				if(yPos==764){
-					yPos = -646;
+					yPos = gameBg.getHeight(null)-Constant.GAME_HEIGHT;
 				}else{
 					if(begin==false)//真正进入游戏才开始滚动
 						yPos += 2;
@@ -157,12 +167,13 @@ public class GameFrame extends MyFrame {
 	public static void main(String[] args) {
 		game.launchFrame();
 		new BgThread().start();
-		new PlaySound("bgmusic.mp3", true).start();
+		pbg.start();
 		
 		game.addKeyListener(game.new KeyMonitor());//添加键盘监听
 		game.setCursor(null);
 		game.addMouseListener(game.new MouseMonitor());
 		game.addMouseMotionListener(game.new MouseMonitor());//添加鼠标监听
+		System.out.println();
 	}
 
 }
