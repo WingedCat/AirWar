@@ -125,6 +125,13 @@ public class Plane {
 		g.drawImage(ensureImg, x, y, null);
 		move(); 
 	}
+	
+	public void setX(int x) {
+		this.x = x-ensureImg.getWidth(null)/2;
+	}
+	public void setY(int y) {
+		this.y = y-ensureImg.getHeight(null)/2;
+	}
 	public void Press(KeyEvent e) {
 		int key = e.getKeyCode();  
 	    switch(key) {  
@@ -148,7 +155,7 @@ public class Plane {
 	    switch(key) {  
 	    case KeyEvent.VK_SPACE:  
 	    case KeyEvent.VK_CONTROL:  
-//	    	fire();预留开火
+	    	fire();//预留开火
 	        break;  
 	    case KeyEvent.VK_LEFT :  
 	        bL = false;  
@@ -164,6 +171,10 @@ public class Plane {
 	        break;  
 	    }
 	    locateDirection();
+	}
+	
+	private void fire() {
+		if(isAlive)return;//不存活，也就没开火的必要了
 	}
 	
 	void locateDirection() {//根据按键设置Plane移动方向-->dir  
