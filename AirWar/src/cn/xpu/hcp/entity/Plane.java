@@ -2,9 +2,11 @@ package cn.xpu.hcp.entity;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.util.Random;
 
 import cn.xpu.hcp.game.GameFrame;
+import cn.xpu.hcp.tools.Constant;
 import cn.xpu.hcp.tools.GameImage;
 
 public class Plane {
@@ -17,9 +19,12 @@ public class Plane {
 	private int blood;//表明飞机血量
 	private GameFrame gf;
 	private int speed;//飞机移动速度
+	private boolean bL,bU,bR,bD;
+	private Direction dir = Direction.STOP;//Plane的移动状态,初始化时默认是STOP  
 	private static Image[] myImgs=new Image[28];//存放我方机型图片的数组
 	private static Image[] enemyImgs = new Image[23];//存放敌方普通机型的图片
 	private static Image[] bossImgs = new Image[8];//存放敌方boss机型的图片
+	private Image ensureImg;//具体确定的图片
 	
 	static{
 		//我方飞机机型图片
@@ -101,18 +106,116 @@ public class Plane {
 		this.gf = gf;
 		if(good==true){
 			randIndex = r.nextInt(28);
+			ensureImg = myImgs[randIndex];
+		}else{
+			if(isBoss){//如果是boss机型，在boss机型中选择
+				randIndex = r.nextInt(8);
+				ensureImg = bossImgs[randIndex];
+			}else{
+				randIndex = r.nextInt(23);
+				ensureImg = enemyImgs[randIndex];
+				dir = Direction.D;//普通敌机方向只有向下
+			}
 		}
 	}
 	public void draw(Graphics g){
 		if(isAlive==false){//飞机死亡，不画
 			return;
 		}
-		if(good==true){//是我方飞机
-			g.drawImage(myImgs[randIndex], x, y, null);
-			
-		}
+		g.drawImage(ensureImg, x, y, null);
+		move(); 
+	}
+	public void Press(KeyEvent e) {
+		int key = e.getKeyCode();  
+	    switch(key) {  
+	    case KeyEvent.VK_LEFT :  
+	        bL = true;  
+	        break;  
+	    case KeyEvent.VK_UP :  
+	        bU = true;  
+	        break;  
+	    case KeyEvent.VK_RIGHT :  
+	        bR = true;  
+	        break;  
+	    case KeyEvent.VK_DOWN :  
+	        bD = true;  
+	        break;  
+	    } 
+	    locateDirection();
+	}
+	public void Release(KeyEvent e) {
+		int key = e.getKeyCode();  
+	    switch(key) {  
+	    case KeyEvent.VK_SPACE:  
+	    case KeyEvent.VK_CONTROL:  
+//	    	fire();预留开火
+	        break;  
+	    case KeyEvent.VK_LEFT :  
+	        bL = false;  
+	        break;  
+	    case KeyEvent.VK_UP :  
+	        bU = false;  
+	        break;  
+	    case KeyEvent.VK_RIGHT :  
+	        bR = false;  
+	        break;  
+	    case KeyEvent.VK_DOWN :  
+	        bD = false;  
+	        break;  
+	    }
+	    locateDirection();
 	}
 	
+	void locateDirection() {//根据按键设置Plane移动方向-->dir  
+	    if(bL && !bU && !bR && !bD) dir = Direction.L;  
+	    else if(bL && bU && !bR && !bD) dir = Direction.LU;  
+	    else if(!bL && bU && !bR && !bD) dir = Direction.U;  
+	    else if(!bL && bU && bR && !bD) dir = Direction.RU;  
+	    else if(!bL && !bU && bR && !bD) dir = Direction.R;  
+	    else if(!bL && !bU && bR && bD) dir = Direction.RD;  
+	    else if(!bL && !bU && !bR && bD) dir = Direction.D;  
+	    else if(bL && !bU && !bR && bD) dir = Direction.LD;  
+	    else if(!bL && !bU && !bR && !bD) dir = Direction.STOP;  
+	} 
 	
-	
+	//Plane的移动方法  
+	void move() {  
+	    switch(dir) {  
+	    case L:  
+	        x -= speed;  
+	        break;  
+	    case LU:  
+	        x -= speed;  
+	        y -= speed;  
+	        break;  
+	    case U:  
+	        y -= speed;  
+	        break;  
+	    case RU:  
+	        x += speed;  
+	        y -= speed;  
+	        break;  
+	    case R:  
+	        x += speed;  
+	        break;  
+	    case RD:  
+	        x += speed;  
+	        y += speed;  
+	        break;  
+	    case D:  
+	        y += speed;  
+	        break;  
+	    case LD:  
+	        x -= speed;  
+	        y += speed;  
+	        break;  
+	    case STOP:  
+	        break;  
+	    }  
+	    //到达窗体边界，不允许继续移动  
+	    if(x < 0) x = 0;  
+	    if(y < 30) y = 30;  
+	    if(x + ensureImg.getWidth(null) > Constant.GAME_WIDTH) x = Constant.GAME_WIDTH - ensureImg.getWidth(null);  
+	    if(y + ensureImg.getHeight(null) > Constant.GAME_HEIGHT) y = Constant.GAME_HEIGHT - ensureImg.getHeight(null);  
+	} 
 }
