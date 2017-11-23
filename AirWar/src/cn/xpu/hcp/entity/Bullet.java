@@ -2,6 +2,8 @@ package cn.xpu.hcp.entity;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Rectangle;
+import java.util.List;
 import java.util.Random;
 
 import cn.xpu.hcp.game.GameFrame;
@@ -94,6 +96,20 @@ public class Bullet {
 		if(good==true){
 			//开始只能是低级子弹，通过拾取宝贝升级子弹
 			ensureImg = myImgs[randIndex];
+			//根据不同等级的子弹设置不同等级的杀伤力
+			if(randIndex>=0&&randIndex<=2){
+				this.power = 10;
+			}else{
+				if(randIndex==3){
+					this.power = 20;
+				}else{
+					if(randIndex>=4&&randIndex<=8){
+						this.power = 50;
+					}else{
+						this.power = 100;
+					}
+				}
+			}
 			dir = Direction.U;
 			WIDTH = ensureImg.getWidth(null);
 			HEIGHT = ensureImg.getHeight(null);
@@ -135,5 +151,27 @@ public class Bullet {
         if(x < 0 || y < 0 || x > Constant.GAME_WIDTH || y > Constant.GAME_HEIGHT) {  
             isAlive = false;//出界就设置为false  
         }
+	}
+	
+	public boolean hitPlane(Plane p) {  
+	    if(this.isAlive && this.getRect().intersects(p.getRect()) && p.getAlive() && this.good != p.isgood()) {//不是己方子弹并且发生了碰撞  
+	        p.setAlive(false);//飞机死亡  
+	        this.isAlive = false;//子弹应该消失  
+	        return true;  
+	    }  
+	    return false;  
+	}  
+	      
+	private Rectangle getRect() {
+		return new Rectangle(x, y, WIDTH, HEIGHT);
+	}
+
+	public boolean hitPlanes(List<Plane> planes) {  
+	    for(int i=0; i<planes.size(); i++) {  
+	        if(hitPlane(planes.get(i))) {  
+	            return true;  
+	        }  
+	    }  
+	    return false;  
 	}
 }
