@@ -89,13 +89,14 @@ public class Bullet {
 		return HEIGHT;
 	}
 
-	public Bullet(int x,int y,int speed,int randIndex,boolean good,GameFrame gf){
+	public Bullet(int x,int y,int speed,int randIndex,boolean good,boolean boss,GameFrame gf){
 		this.x = x;
 		this.y = y;
 		this.speed = speed;
 		this.good = good;
 		this.gf = gf;
 		this.randIndex = randIndex;
+		this.isBoss = boss;
 		if(good==true){
 			//开始只能是低级子弹，通过拾取宝贝升级子弹
 			ensureImg = myImgs[randIndex];
@@ -120,7 +121,8 @@ public class Bullet {
 			dir = Direction.D;
 			if(isBoss){
 				//开始发射低级子弹，随机发射高级和大招
-				ensureImg = bossImgs[randIndex];
+				this.randIndex = r.nextInt(2);
+				ensureImg = bossImgs[this.randIndex];
 				WIDTH = ensureImg.getWidth(null);
 				HEIGHT = ensureImg.getHeight(null);
 				//根据不同等级的子弹设置不同等级的杀伤力

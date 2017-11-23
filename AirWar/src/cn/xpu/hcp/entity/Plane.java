@@ -13,6 +13,7 @@ import cn.xpu.hcp.tools.PlaySound;
 
 public class Plane {
 	private static Random r = new Random(); 
+	private int step=r.nextInt(50);//随机走多少步 ，用于Boss敌机
 	int randIndex;
 	private int x,y;//飞机的位置
 	private boolean good;//飞机是我还是对方（敌机）；我设置为true，敌机设置为false
@@ -22,7 +23,7 @@ public class Plane {
 	private int speed;//飞机移动速度
 	private boolean bL,bU,bR,bD;
 	private int life = 100;
-	public static int WIDTH,HEIGHT;//子弹的宽和高
+	private int WIDTH,HEIGHT;//子弹的宽和高
 	private Direction dir = Direction.STOP;//Plane的移动状态,初始化时默认是STOP  
 	private static Image[] myImgs=new Image[28];//存放我方机型图片的数组
 	private static Image[] enemyImgs = new Image[23];//存放敌方普通机型的图片
@@ -101,12 +102,14 @@ public class Plane {
 	    bossImgs[7]= GameImage.getImage("resources/boss8.png"); 
 	}
 	
-	public Plane(int x,int y,int speed,boolean good,GameFrame gf){
+	
+	public Plane(int x,int y,int speed,boolean good,boolean boss,GameFrame gf){
 		this.x = x;
 		this.y = y;
 		this.speed = speed;
 		this.good = good;
 		this.gf = gf;
+		this.isBoss = boss;
 		if(good==true){
 			randIndex = r.nextInt(28);
 			ensureImg = myImgs[randIndex];
@@ -125,6 +128,7 @@ public class Plane {
 		}
 		WIDTH = ensureImg.getWidth(null);
 		HEIGHT = ensureImg.getHeight(null);
+		
 	}
 	public void setRandIndex(int randIndex) {
 		this.randIndex = randIndex;
@@ -203,13 +207,13 @@ public class Plane {
 		}
 		int xPos = -10;  
 		int yPos = -10;  
-		Bullet m = new Bullet(xPos, yPos,10,randIndex, good,this.gf); 
+		Bullet m = new Bullet(xPos, yPos,10,randIndex, good,this.isBoss,this.gf); 
 		if(good==true){
-			m.setX(this.x + Plane.WIDTH/2 - m.getWIDTH()/2);
+			m.setX(this.x + this.WIDTH/2 - m.getWIDTH()/2);
 			m.setY(this.y   - m.getHEIGHT()+20);
 		}else{//敌机发射子弹的位置不同
-			m.setX(this.x + Plane.WIDTH/2 - m.getWIDTH()/2);
-			m.setY(this.y +Plane.HEIGHT);
+			m.setX(this.x + this.WIDTH/2 - m.getWIDTH()/2);
+			m.setY(this.y +this.HEIGHT);
 		}
 		gf.bs.add(m);//集合中添加子弹  
 
@@ -272,11 +276,20 @@ public class Plane {
 	    	if(x + ensureImg.getWidth(null) > Constant.GAME_WIDTH) x = Constant.GAME_WIDTH - ensureImg.getWidth(null);  
 	    	if(y + ensureImg.getHeight(null) > Constant.GAME_HEIGHT) y = Constant.GAME_HEIGHT - ensureImg.getHeight(null);  
 	    }else{
-	    	if(r.nextInt(40) > 38) this.fire();
 	    	if(isBoss){//boss敌机只会左右移动，所有不能左右出界
+	    		Direction[] dirs = Direction.values();  
+	    		if(step == 0) {  
+	    			step = r.nextInt(50) + 3;  
+	    			int rn = r.nextInt(2);  
+	    			dir = dirs[rn];//获取随机方向  
+	    		}             
+	    		step --;  
+	    		if(r.nextInt(40) > 38) this.fire();//产生的随机数大于38就开火  
+	    		if(x < 0) x = 0; 
 	    		if(x + ensureImg.getWidth(null) > Constant.GAME_WIDTH) x = Constant.GAME_WIDTH - ensureImg.getWidth(null);  
 		    	if(y + ensureImg.getHeight(null) > Constant.GAME_HEIGHT) y = Constant.GAME_HEIGHT - ensureImg.getHeight(null);  
 	    	}else{
+	    		if(r.nextInt(40) > 38) this.fire();
 	    		if(y>Constant.GAME_HEIGHT){
 	    			isAlive = false;
 	    		}
