@@ -9,7 +9,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.LinkedList;
+import java.util.List;
 
+import cn.xpu.hcp.entity.Bullet;
 import cn.xpu.hcp.entity.Plane;
 import cn.xpu.hcp.tools.Constant;
 import cn.xpu.hcp.tools.GameImage;
@@ -31,6 +34,7 @@ public class GameFrame extends MyFrame {
 	Plane myplane = new Plane(Constant.GAME_WIDTH/2,650,10,true,this);
 	
 	//创建子弹集合
+	public List<Bullet> bs = new LinkedList<Bullet>();
 	
 	public void paint(Graphics g){
 		if(begin){
@@ -44,8 +48,13 @@ public class GameFrame extends MyFrame {
 		}
 		g.drawImage(gameBg, 0, yPos, null);
 		g.drawImage(gameBg, 0, yPos-1411, null);//两张图片交替
-		
+//		g.drawString("子弹数量："+bs.size(), 100, 100);  
 		myplane.draw(g);
+		//绘制子弹
+		for(int i=0; i<bs.size(); i++) {//将集合中的子弹都绘制出来  
+	        Bullet b = bs.get(i);  
+	        b.draw(g);  
+	    } 
 	}
 	
 	static class BgThread extends Thread{//创建BgThread类，专门用于改名yPos使背景图片滚动
@@ -87,16 +96,15 @@ public class GameFrame extends MyFrame {
 	
 	//鼠标监听类
 	private class MouseMonitor extends MouseAdapter{
-		
 		@Override
 		public void mousePressed(MouseEvent e) {
-			System.out.println("鼠标按下");
+			
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			System.out.println("鼠标释放");
-			//左键为16，右键为4
+			if(e.getModifiers()==16)
+			 myplane.fire();
 		}
 
 		@Override
@@ -110,7 +118,9 @@ public class GameFrame extends MyFrame {
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			if(useMouse){
-				System.out.println(e.getModifiers());
+				if(e.getModifiers()==16){
+					myplane.fire(0);
+				}
 				myplane.setX(e.getX());
 				myplane.setY(e.getY());
 			}
