@@ -2,6 +2,8 @@ package cn.xpu.hcp.game;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import cn.xpu.hcp.entity.Plane;
 import cn.xpu.hcp.tools.Constant;
@@ -57,11 +59,26 @@ public class GameFrame extends MyFrame {
 		}
 	}
 	
+	//键盘监听类  
+	//定义为内部类，方便使用外部类的普通属性  
+	private class KeyMonitor extends KeyAdapter{  
+	    @Override  
+	    public void keyPressed(KeyEvent e) {  
+	        myplane.Press(e);//在Plane类中创建方法，响应键盘按下时的操作  
+	    }  
+	  
+	    @Override  
+	    public void keyReleased(KeyEvent e) {  
+	        myplane.Release(e);//在Plane类中创建方法，响应键盘释放时的操作  
+	    }  
+	      
+	}  
 	public static void main(String[] args) {
 		GameFrame game = new GameFrame();
 		game.launchFrame();
 		new BgThread().start();
-		new PlaySound("bgmusic.mp3", true).start();;
+		new PlaySound("bgmusic.mp3", true).start();
+		game.addKeyListener(game.new KeyMonitor());//添加键盘监听
 	}
 
 }
