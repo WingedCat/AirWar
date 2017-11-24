@@ -13,6 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import cn.xpu.hcp.entity.Bullet;
 import cn.xpu.hcp.entity.CreateEnemyThread;
@@ -29,14 +30,14 @@ public class GameFrame extends MyFrame {
 	
 	public  long start = System.currentTimeMillis();
 	
-	public boolean success = false;
+	public  AtomicBoolean success = new AtomicBoolean(false);
 	
 	//获取血条
 	Image bloodImg = GameImage.getImage("resources/blood.png");
 	
 	static boolean begin=true;//开始标志
-	static int yPos = -1*(gameBg.getHeight(null)-Constant.GAME_HEIGHT)+1;
-	static int yPos2 = yPos - gameBg.getHeight(null);
+	public static int yPos = -1*(gameBg.getHeight(null)-Constant.GAME_HEIGHT)+1;
+	public static int yPos2 = yPos - gameBg.getHeight(null);
 	
 	static boolean useMouse = true;
 	public static PlaySound pbg = new PlaySound("bgmusic.mp3", true);
@@ -117,7 +118,8 @@ public class GameFrame extends MyFrame {
 			for(long i=0;i<=200000;i++){
 				
 			}
-			success = true;//成功通过
+			System.out.println("修改success==true");
+			success.set(true);//成功通过
 		}
 		
 	}

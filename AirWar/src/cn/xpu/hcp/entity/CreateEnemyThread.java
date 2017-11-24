@@ -1,14 +1,17 @@
 package cn.xpu.hcp.entity;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import cn.xpu.hcp.game.GameFrame;
+import cn.xpu.hcp.tools.Constant;
 import cn.xpu.hcp.tools.GameImage;
 import cn.xpu.hcp.tools.PlaySound;
 
 public class CreateEnemyThread extends Thread{
 	private GameFrame gf;
 	private static Random r = new Random();
-	private static int count=0;
+	private static AtomicInteger count = new AtomicInteger(1);
 
 	public CreateEnemyThread(GameFrame gf){
 		this.gf = gf;
@@ -18,11 +21,12 @@ public class CreateEnemyThread extends Thread{
 	@Override
 	public void run() {
 		while(true){
-			System.out.println((System.currentTimeMillis()-gf.start)/1000);
+			
 			if((System.currentTimeMillis()-gf.start)/1000>=10){//一分半后，待打完所有普通敌人，boss开始出现
 				if(gf.es.size()==0){
-					
-					if(gf.success==false){
+//					System.out.println("没有普通敌机了...");
+					if(gf.success.get()==false){
+//						System.out.println("还没有通关，产生boss");
 						new PlaySound("bosscoming.mp3", false);
 						gf.pbg.stop();
 						gf.pbg = new PlaySound("bossing.mp3", true);
@@ -31,25 +35,30 @@ public class CreateEnemyThread extends Thread{
 						boss.setLife(100);//boss生命值为1000
 						gf.es.add(boss);
 					}else{
-						count++;
-						if(count==4){
-							System.out.println("count="+count);
-							count=0;
-						}
-						gf.success = false;
 						gf.pbg.stop();
 						try {
 							Thread.sleep(5000);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
+						count.getAndIncrement();
+//						System.out.println("消灭了boss，下一关...\n下面是第"+count.get()+"关");
+						if(count.get()==4){
+							System.out.println("count="+count);
+							count.set(1);
+							System.out.println(count.get());
+						}
+						System.out.println("修改success=false");
+						gf.success.set(false);;
 						gf.boss = gf.temp;
-						gf.gameBg = GameImage.getImage("resources/background"+(count+1)+".bmp");
+						gf.gameBg = GameImage.getImage("resources/background"+count.get()+".bmp");
+						gf.yPos = -1*(gf.gameBg.getHeight(null)-Constant.GAME_HEIGHT)+1;
+						gf.yPos2 = gf.yPos - gf.gameBg.getHeight(null);
 						gf.start = System.currentTimeMillis();
 						gf.myplane.setLife(100);
 						gf.pbg = new PlaySound("bgmusic.mp3", true);
 						gf.pbg.start();
-//						count++;
+						
 						
 					}
 					
