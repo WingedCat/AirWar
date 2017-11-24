@@ -95,7 +95,7 @@ public class GameFrame extends MyFrame {
 	        if(p.isBoss()){
 	        	boss = p;
 				g.setColor(Color.blue);
-				g.fillRect(48, 30, (int)Math.round(214*(p.getLife()*0.001)), 10);
+				g.fillRect(48, 30, (int)Math.round(214*(p.getLife()*0.0001)), 10);
 				g.setColor(Color.white);
 				if(p.getLife()<=0){
 					p.setLife(0);

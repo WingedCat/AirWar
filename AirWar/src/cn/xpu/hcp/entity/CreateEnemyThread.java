@@ -26,13 +26,13 @@ public class CreateEnemyThread extends Thread{
 				gf.myplane.count = 0;
 				gf.myplane.eated = false;
 			}
-			if(gf.myplane.getLife()<=10&&r.nextInt(40)>=38){
+			if(gf.myplane.getLife()<=10&&gf.myplane.getLife()>0&&r.nextInt(40)>=38){
 				Treasure t = new Treasure(0,gf);//生命值小于10时系统随机刷出补血的珍宝
 				gf.ts.add(t);
 			}
-			if((System.currentTimeMillis()-gf.start)/1000>=10){//一分半后，待打完所有普通敌人，boss开始出现
+			if((System.currentTimeMillis()-gf.start)/1000>=90){//一分半后，待打完所有普通敌人，boss开始出现
 				
-				if((System.currentTimeMillis()-gf.start)/1000%10==0&&r.nextInt(40)>=38){
+				if((System.currentTimeMillis()-gf.start)/1000%30==0&&r.nextInt(40)>=38){
 					if(gf.ts.size()==0){
 						Treasure t = new Treasure(gf);//三个时间节点，随机刷出珍宝
 						gf.ts.add(t);
@@ -48,7 +48,7 @@ public class CreateEnemyThread extends Thread{
 						gf.pbg = new PlaySound("bossing.mp3", true);
 						gf.pbg.start();
 						Plane boss = new Plane(r.nextInt(500),50,5,false,true,gf);//boss敌机
-						boss.setLife(100);//boss生命值为1000
+						boss.setLife(10000);//boss生命值为10000
 						gf.es.add(boss);
 					}else{
 						gf.pbg.stop();
