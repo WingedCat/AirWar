@@ -21,19 +21,22 @@ public class CreateEnemyThread extends Thread{
 	@Override
 	public void run() {
 		while(true){
-			if((System.currentTimeMillis()-gf.myplane.eatStart)/1000>=10){
+			if((System.currentTimeMillis()-gf.myplane.eatStart)/1000>=10&&gf.myplane.eated==true){
 				gf.myplane.back();//超级炮弹使用10秒，还原
 				gf.myplane.count = 0;
+				gf.myplane.eated = false;
 			}
 			if(gf.myplane.getLife()<=10&&r.nextInt(40)>=38){
-				Treasure t = new Treasure(0);//生命值小于10时系统随机刷出补血的珍宝
+				Treasure t = new Treasure(0,gf);//生命值小于10时系统随机刷出补血的珍宝
 				gf.ts.add(t);
 			}
 			if((System.currentTimeMillis()-gf.start)/1000>=10){//一分半后，待打完所有普通敌人，boss开始出现
 				
 				if((System.currentTimeMillis()-gf.start)/1000%10==0&&r.nextInt(40)>=38){
-					Treasure t = new Treasure();//三个时间节点，随机刷出珍宝
-					gf.ts.add(t);
+					if(gf.ts.size()==0){
+						Treasure t = new Treasure(gf);//三个时间节点，随机刷出珍宝
+						gf.ts.add(t);
+					}
 				}
 				
 				if(gf.es.size()==0){

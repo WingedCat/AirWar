@@ -121,7 +121,8 @@ public class Bullet {
 			dir = Direction.D;
 			if(isBoss){
 				//开始发射低级子弹，随机发射高级和大招
-				this.randIndex = r.nextInt(2);
+//				this.randIndex = r.nextInt(2);
+				this.randIndex = randIndex;
 				ensureImg = bossImgs[this.randIndex];
 				WIDTH = ensureImg.getWidth(null);
 				HEIGHT = ensureImg.getHeight(null);

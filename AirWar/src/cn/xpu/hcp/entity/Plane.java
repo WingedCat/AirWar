@@ -17,6 +17,7 @@ public class Plane {
 	int randIndex;
 	int oldIndex;
 	public long eatStart;
+	public boolean eated=false;
 	public int count=0;//记录吃了多少个升级子弹的珍宝
 	private int x,y;//飞机的位置
 	private boolean good;//飞机是我还是对方（敌机）；我设置为true，敌机设置为false
@@ -218,6 +219,17 @@ public class Plane {
 			m.setX(this.x + this.WIDTH/2 - m.getWIDTH()/2);
 			m.setY(this.y +this.HEIGHT);
 		}
+		if(isBoss){
+			if(r.nextInt(40)>38){
+				gf.bs.remove(m);
+				Bullet bossM = new Bullet(xPos, yPos, 15, 4, good, isBoss, gf);
+				bossM.setX(this.x + this.WIDTH/2 - m.getWIDTH()/2);
+				bossM.setY(this.y +this.HEIGHT);
+				gf.bs.add(bossM);
+				System.out.println("boss 发射超级炮弹");
+				return;
+			}
+		}
 		gf.bs.add(m);//集合中添加子弹  
 
 	}
@@ -287,7 +299,8 @@ public class Plane {
 	    			dir = dirs[rn];//获取随机方向  
 	    		}             
 	    		step --;  
-	    		if(r.nextInt(40) > 38) this.fire();//产生的随机数大于38就开火  
+	    		if(r.nextInt(40) > 35) this.fire();//产生的随机数大于38就开火  
+	    		
 	    		if(x < 0) x = 0; 
 	    		if(x + ensureImg.getWidth(null) > Constant.GAME_WIDTH) x = Constant.GAME_WIDTH - ensureImg.getWidth(null);  
 		    	if(y + ensureImg.getHeight(null) > Constant.GAME_HEIGHT) y = Constant.GAME_HEIGHT - ensureImg.getHeight(null);  
@@ -322,9 +335,11 @@ public class Plane {
 				this.life = 100;
 			}else{
 				count++;
-				if(count==2){
+				if(count>=2){
+					eated = true;
 					this.randIndex = r.nextInt(12)%(4) + 9;
 					eatStart = System.currentTimeMillis();
+					new PlaySound("baozou.mp3", false).start();//升级成超级炮弹，播放暴走音乐
 				}else{
 					this.randIndex = r.nextInt(8)%(6) + 3;
 					oldIndex = randIndex;
