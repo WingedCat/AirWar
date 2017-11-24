@@ -14,6 +14,7 @@ import cn.xpu.hcp.tools.PlaySound;
 public class Plane {
 	private static Random r = new Random(); 
 	private int step=r.nextInt(50);//随机走多少步 ，用于Boss敌机
+	public int lifeNum = 2;
 	int randIndex;
 	int oldIndex;
 	public long eatStart;

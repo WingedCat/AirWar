@@ -73,7 +73,8 @@ public class GameFrame extends MyFrame {
 		g.drawImage(gameBg, 0, yPos, null);
 		g.drawImage(gameBg, 0, yPos2, null);//两张图片交替
 //		g.drawImage(gameBg, 0, yPos - 2*gameBg.getHeight(null), null);
-//		g.drawString("子弹数量："+bs.size(), 100, 100);
+		g.setColor(Color.WHITE);
+		g.drawString("生命数："+myplane.lifeNum, 100, 100);
 //		g.setColor(Color.red);
 //		g.drawString("敌机数量："+es.size(), 100, 100); 
 		for(int i=0;i<ts.size();i++){
@@ -126,6 +127,12 @@ public class GameFrame extends MyFrame {
 			}
 			System.out.println("修改success==true");
 			success.set(true);//成功通过
+		}
+		if(myplane.lifeNum==0&&myplane.getLife()<=0){
+			g.drawImage(GameImage.getImage("resources/loser.png"), 70, 330, null);
+			for(long i=0;i<=200000;i++){
+				
+			}
 		}
 		
 	}
@@ -230,6 +237,7 @@ public class GameFrame extends MyFrame {
 		game.addMouseListener(game.new MouseMonitor());
 		game.addMouseMotionListener(game.new MouseMonitor());//添加鼠标监听
 		new CreateEnemyThread(game).start();//开启检测线程，检测敌机数量
+		game.setIconImage(GameImage.getImage("resources/icon.png"));
 	}
 
 }

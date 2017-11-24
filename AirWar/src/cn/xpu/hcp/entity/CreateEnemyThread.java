@@ -30,9 +30,10 @@ public class CreateEnemyThread extends Thread{
 				Treasure t = new Treasure(0,gf);//生命值小于10时系统随机刷出补血的珍宝
 				gf.ts.add(t);
 			}
+			
 			if((System.currentTimeMillis()-gf.start)/1000>=90){//一分半后，待打完所有普通敌人，boss开始出现
 				
-				if((System.currentTimeMillis()-gf.start)/1000%30==0&&r.nextInt(40)>=38){
+				if((System.currentTimeMillis()-gf.start)/1000%30==0&&r.nextInt(40)>=37){
 					if(gf.ts.size()==0){
 						Treasure t = new Treasure(gf);//三个时间节点，随机刷出珍宝
 						gf.ts.add(t);
@@ -59,7 +60,7 @@ public class CreateEnemyThread extends Thread{
 						}
 						count.getAndIncrement();
 //						System.out.println("消灭了boss，下一关...\n下面是第"+count.get()+"关");
-						if(count.get()==4){
+						if(count.get()==7){
 							System.out.println("count="+count);
 							count.set(1);
 							System.out.println(count.get());

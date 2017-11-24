@@ -191,10 +191,24 @@ public class Bullet {
 	        }
 	    	p.setLife(p.getLife()-this.power);
 	        if(p.getLife()<=0||p.getAlive()==false){
-	        	p.setAlive(false);//·É»úËÀÍö  
-	        	Explode e = new Explode(x, y, gf);  
-	        	gf.explodes.add(e);//Ìí¼Ó±¬Õ¨
-	        	return true;
+	        	if(p.isgood()==false){
+	        		p.setAlive(false);//·É»úËÀÍö  
+	        		Explode e = new Explode(x, y, gf);  
+	        		gf.explodes.add(e);//Ìí¼Ó±¬Õ¨
+	        		return true;
+	        	}else{
+	        		if(p.lifeNum==0){
+	        			p.setAlive(false);//·É»úËÀÍö  
+		        		Explode e = new Explode(x, y, gf);  
+		        		gf.explodes.add(e);//Ìí¼Ó±¬Õ¨
+		        		return true;
+	        		}else{
+	        			p.lifeNum--;
+	        			p.setLife(100);
+	        			p.setAlive(true);//·É»úËÀÍö  
+		        		return true;
+	        		}
+	        	}
 	        }
 	    }  
 	    return false;  

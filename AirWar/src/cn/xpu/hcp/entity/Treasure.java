@@ -31,8 +31,8 @@ public class Treasure {
 		imgs[1] = GameImage.getImage("resources/t1.bmp");
 		imgs[2] = GameImage.getImage("resources/t3.bmp");
 		imgs[3] = GameImage.getImage("resources/t4.png");
-		rx = r.nextInt(Constant.GAME_WIDTH);
-		ry = r.nextInt(Constant.GAME_HEIGHT);
+		rx = r.nextInt(Constant.GAME_WIDTH-20);
+		ry = r.nextInt(Constant.GAME_HEIGHT-20);
 	}
 	
 	//指明血块运动的轨迹，由pos中各个点构成
