@@ -19,6 +19,7 @@ import cn.xpu.hcp.entity.Bullet;
 import cn.xpu.hcp.entity.CreateEnemyThread;
 import cn.xpu.hcp.entity.Explode;
 import cn.xpu.hcp.entity.Plane;
+import cn.xpu.hcp.entity.Treasure;
 import cn.xpu.hcp.tools.Constant;
 import cn.xpu.hcp.tools.GameImage;
 import cn.xpu.hcp.tools.MyFrame;
@@ -45,13 +46,14 @@ public class GameFrame extends MyFrame {
 	private static final long serialVersionUID = 1L;
 	//取得开始背景
 	Image beginBg = GameImage.getImage("resources/startbg1.jpg");
-	
 	//创建我方飞机
 	public Plane myplane = new Plane(Constant.GAME_WIDTH/2,650,10,true,false,this);
 	//创建敌方飞机集合
 	public  List<Plane> es = new LinkedList<Plane>(); 
 	//创建子弹集合
 	public List<Bullet> bs = new LinkedList<Bullet>();
+	//创建珍宝集合
+	public List<Treasure> ts = new LinkedList<Treasure>();
 	//创建爆炸集合
 	public List<Explode> explodes = new LinkedList<Explode>();
 	public Plane boss = new Plane(-100,-100,0,false,true,this);
@@ -74,7 +76,11 @@ public class GameFrame extends MyFrame {
 //		g.drawString("子弹数量："+bs.size(), 100, 100);
 //		g.setColor(Color.red);
 //		g.drawString("敌机数量："+es.size(), 100, 100); 
-		
+		for(int i=0;i<ts.size();i++){
+			Treasure t = ts.get(i);
+			t.draw(g);
+			myplane.eat(t);
+		}
 		myplane.draw(g);
 		//绘制子弹
 		for(int i=0; i<bs.size(); i++) {//将集合中的子弹都绘制出来  

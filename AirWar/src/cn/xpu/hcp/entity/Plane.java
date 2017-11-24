@@ -15,6 +15,9 @@ public class Plane {
 	private static Random r = new Random(); 
 	private int step=r.nextInt(50);//随机走多少步 ，用于Boss敌机
 	int randIndex;
+	int oldIndex;
+	public long eatStart;
+	public int count=0;//记录吃了多少个升级子弹的珍宝
 	private int x,y;//飞机的位置
 	private boolean good;//飞机是我还是对方（敌机）；我设置为true，敌机设置为false
 	private boolean isAlive = true;//表明飞机是否活着
@@ -311,5 +314,30 @@ public class Plane {
 
 	public void setBoss(boolean isBoss) {
 		this.isBoss = isBoss;
+	}
+	
+	public boolean eat(Treasure t) {
+		if(this.isAlive && t.isLive() && this.getRect().intersects(t.getRect())) {
+			if(t.type==1){
+				this.life = 100;
+			}else{
+				count++;
+				if(count==2){
+					this.randIndex = r.nextInt(12)%(4) + 9;
+					eatStart = System.currentTimeMillis();
+				}else{
+					this.randIndex = r.nextInt(8)%(6) + 3;
+					oldIndex = randIndex;
+				}
+				
+			}
+			t.setLive(false);
+			return true;
+		}
+		return false;
+	}
+	
+	public void back(){
+		this.randIndex = oldIndex;
 	}
 }
