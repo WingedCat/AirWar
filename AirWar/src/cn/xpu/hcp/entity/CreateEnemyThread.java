@@ -30,7 +30,16 @@ public class CreateEnemyThread extends Thread{
 				Treasure t = new Treasure(0,gf);//生命值小于10时系统随机刷出补血的珍宝
 				gf.ts.add(t);
 			}
-			
+			if(gf.myplane.getLife()>0){
+				if(r.nextInt(40)>38){
+					SuperMissile superM = new SuperMissile(gf, -100, -100, true);
+					superM.x = (gf.myplane.x + gf.myplane.WIDTH/2 - superM.WIDTH/2);
+					superM.y = (gf.myplane.y   - superM.HEIGHT+20);
+					gf.supermissiles.add(superM);
+					gf.supermissiles.add(superM);
+					System.out.println("导弹装填...");
+				}
+			}
 			if((System.currentTimeMillis()-gf.start)/1000>=90){//一分半后，待打完所有普通敌人，boss开始出现
 				
 				if((System.currentTimeMillis()-gf.start)/1000%30==0&&r.nextInt(40)>=37){
@@ -42,7 +51,7 @@ public class CreateEnemyThread extends Thread{
 				
 				if(gf.es.size()==0){
 //					System.out.println("没有普通敌机了...");
-					if(gf.success.get()==false){
+					if(gf.flagMap.get("success")==false&&gf.flagMap.get("boss")==false){
 //						System.out.println("还没有通关，产生boss");
 						new PlaySound("bosscoming.mp3", false);
 						gf.pbg.stop();
@@ -50,6 +59,7 @@ public class CreateEnemyThread extends Thread{
 						gf.pbg.start();
 						Plane boss = new Plane(r.nextInt(500),50,5,false,true,gf);//boss敌机
 						boss.setLife(10000);//boss生命值为10000
+						gf.flagMap.put("boss", true);
 						gf.es.add(boss);
 					}else{
 						gf.pbg.stop();
@@ -66,7 +76,9 @@ public class CreateEnemyThread extends Thread{
 							System.out.println(count.get());
 						}
 						System.out.println("修改success=false");
-						gf.success.set(false);;
+//						gf.success.set(false);
+						gf.flagMap.put("success", false);
+						gf.flagMap.put("boss", false);
 						gf.boss = gf.temp;
 						gf.gameBg = GameImage.getImage("resources/background"+count.get()+".bmp");
 						gf.yPos = -1*(gf.gameBg.getHeight(null)-Constant.GAME_HEIGHT)+1;

@@ -13,12 +13,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import cn.xpu.hcp.entity.Bullet;
 import cn.xpu.hcp.entity.CreateEnemyThread;
 import cn.xpu.hcp.entity.Explode;
 import cn.xpu.hcp.entity.Plane;
+import cn.xpu.hcp.entity.SuperMissile;
 import cn.xpu.hcp.entity.Treasure;
 import cn.xpu.hcp.tools.Constant;
 import cn.xpu.hcp.tools.GameImage;
@@ -56,8 +59,17 @@ public class GameFrame extends MyFrame {
 	public List<Treasure> ts = new LinkedList<Treasure>();
 	//创建爆炸集合
 	public List<Explode> explodes = new LinkedList<Explode>();
+	//创建导弹集合
+	public List<SuperMissile> supermissiles = new LinkedList<SuperMissile>();
+	
 	public Plane boss = new Plane(-100,-100,0,false,true,this);
 	public Plane temp = boss;
+	public static ConcurrentHashMap<String,Boolean> flagMap = new ConcurrentHashMap<String,Boolean> ();
+    
+	static{
+    	flagMap.put("success", false);
+    	flagMap.put("boss", false);
+    }
 	
 	public void paint(Graphics g){
 		
@@ -90,6 +102,7 @@ public class GameFrame extends MyFrame {
 	        b.hitPlanes(es);
 	        b.hitPlane(myplane);
 	    }
+		
 		//绘制敌机
 		for(int i=0; i<es.size(); i++) {  
 	        Plane p = es.get(i);
@@ -120,13 +133,29 @@ public class GameFrame extends MyFrame {
 			myplane.setLife(0);
 		}
 		g.drawString(myplane.getLife()+"", 155, 65);
-		if(boss.getLife()==0){
+		for(int i=0; i<es.size(); i++) {  
+	        Plane p = es.get(i);
+				for(int j=0;j<supermissiles.size();j++){
+//					System.out.println("画导弹。。。");
+					SuperMissile superM = supermissiles.get(j);
+					Plane p1 = es.get(new Random().nextInt(es.size()));
+					Plane p2 = es.get(new Random().nextInt(es.size()));
+					superM.draw(g,p1);
+					superM.draw(g,p2);
+					superM.hitTank(p1);
+					superM.hitTank(p2);
+					superM.hitTank(myplane);
+				}
+	    }
+		if(boss.getLife()==0&&myplane.getLife()>0){
 			g.drawImage(GameImage.getImage("resources/win.png"), 210, 330, null);
 			for(long i=0;i<=200000;i++){
 				
 			}
 			System.out.println("修改success==true");
-			success.set(true);//成功通过
+			flagMap.put("success", true);
+			flagMap.put("boss", false);
+//			success.set(true);//成功通过
 		}
 		if(myplane.lifeNum==0&&myplane.getLife()<=0){
 			g.drawImage(GameImage.getImage("resources/loser.png"), 70, 330, null);

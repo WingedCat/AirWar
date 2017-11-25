@@ -20,7 +20,7 @@ public class Plane {
 	public long eatStart;
 	public boolean eated=false;
 	public int count=0;//记录吃了多少个升级子弹的珍宝
-	private int x,y;//飞机的位置
+	public int x,y;//飞机的位置
 	private boolean good;//飞机是我还是对方（敌机）；我设置为true，敌机设置为false
 	private boolean isAlive = true;//表明飞机是否活着
 	private boolean isBoss;//用于敌方飞机是否是boss机型
@@ -28,7 +28,7 @@ public class Plane {
 	private int speed;//飞机移动速度
 	private boolean bL,bU,bR,bD;
 	private int life = 100;
-	private int WIDTH,HEIGHT;//子弹的宽和高
+	public int WIDTH,HEIGHT;//子弹的宽和高
 	private Direction dir = Direction.STOP;//Plane的移动状态,初始化时默认是STOP  
 	private static Image[] myImgs=new Image[28];//存放我方机型图片的数组
 	private static Image[] enemyImgs = new Image[23];//存放敌方普通机型的图片
@@ -227,9 +227,32 @@ public class Plane {
 				bossM.setX(this.x + this.WIDTH/2 - m.getWIDTH()/2);
 				bossM.setY(this.y +this.HEIGHT);
 				gf.bs.add(bossM);
-				System.out.println("boss 发射超级炮弹");
+//				System.out.println("boss 发射超级炮弹");
 				return;
 			}
+			if(r.nextInt(40)>=33){
+    			for(int i=0;i<5;i++){
+    				SuperMissile2 missile2 = new SuperMissile2(gf, this.x + this.WIDTH/2 - m.getWIDTH()/2, this.y +this.HEIGHT, false, gf.myplane);
+    				if(i==0){
+    					missile2.Costhita-=0.1;
+    					missile2.Sinthita+=0.1;
+    				}
+    				if(i==2){
+    					missile2.Costhita-=0.1;
+    					missile2.Sinthita-=0.1;
+    				}
+    				if(i==3){
+    					missile2.Costhita+=0.1;
+    					missile2.Sinthita-=0.1;
+    				}
+    				if(i==4){
+    					missile2.Costhita+=0.1;
+    					missile2.Sinthita+=0.1;
+    				}
+    				missile2.speed = 5;
+    				gf.supermissiles.add(missile2);
+    			}
+    		}
 		}
 		gf.bs.add(m);//集合中添加子弹  
 
@@ -298,16 +321,19 @@ public class Plane {
 	    			step = r.nextInt(50) + 3;  
 	    			int rn = r.nextInt(2);  
 	    			dir = dirs[rn];//获取随机方向  
+//	    			this.speed=0;
 	    		}             
 	    		step --;  
-	    		if(r.nextInt(40) > 35) this.fire();//产生的随机数大于38就开火  
+	    		if(r.nextInt(40) >= 35) this.fire();//产生的随机数大于38就开火
+	    		
+	    		
 	    		
 	    		if(x < 0) x = 0; 
 	    		if(x + ensureImg.getWidth(null) > Constant.GAME_WIDTH) x = Constant.GAME_WIDTH - ensureImg.getWidth(null);  
 		    	if(y + ensureImg.getHeight(null) > Constant.GAME_HEIGHT) y = Constant.GAME_HEIGHT - ensureImg.getHeight(null);  
 	    	}else{
 	    		if(r.nextInt(40) > 38) this.fire();
-	    		if(y>Constant.GAME_HEIGHT){
+	    		if(y>(Constant.GAME_HEIGHT)){
 	    			isAlive = false;
 	    		}
 	    	}
